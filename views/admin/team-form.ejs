@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: team ? 'Edit Team' : 'New Team' }) %>
+</head>
+<body class="g-sidenav-show bg-gray-100">
+  <div class="min-height-300 bg-dark position-absolute w-100"></div>
+  <%- include('../partials/sidebar', { user, active }) %>
+  <main class="main-content position-relative border-radius-lg">
+    <%- include('../partials/navbar-dashboard', { user, pageTitle: team ? 'Edit Team' : 'New Team' }) %>
+    <div class="container-fluid py-4">
+      <div class="card">
+        <div class="card-body">
+          <form action="/admin/teams<%= team ? '/' + team._id : '' %>" method="POST">
+            <%- include('../partials/csrf') %>
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <input type="text" name="name" class="form-control" value="<%= team ? team.name : '' %>" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Organization</label>
+              <select name="organization" class="form-control">
+                <option value="">— None —</option>
+                <% const orgId = team && team.organization ? (team.organization._id || team.organization).toString() : ''; %>
+                <% organizations.forEach(function(o) { %>
+                <option value="<%= o._id %>" <%= orgId === o._id.toString() ? 'selected' : '' %>><%= o.name %></option>
+                <% }); %>
+              </select>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Coach</label>
+              <select name="coach" class="form-control">
+                <option value="">— None —</option>
+                <% const coachId = team && team.coach ? (team.coach._id || team.coach).toString() : ''; %>
+                <% coaches.forEach(function(c) { %>
+                <option value="<%= c._id %>" <%= coachId === c._id.toString() ? 'selected' : '' %>><%= c.firstName %> <%= c.lastName %></option>
+                <% }); %>
+              </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="/admin/teams" class="btn btn-outline-secondary">Cancel</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+  <%- include('../partials/scripts') %>
+</body>
+</html>

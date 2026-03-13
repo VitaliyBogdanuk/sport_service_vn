@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: 'Players' }) %>
+</head>
+<body>
+  <div class="container position-sticky z-index-sticky top-0">
+    <div class="row">
+      <div class="col-12">
+        <%- include('../partials/navbar-public') %>
+      </div>
+    </div>
+  </div>
+  <main class="main-content mt-0" style="padding-top: 6rem;">
+    <div class="container-fluid py-4">
+      <div class="card">
+        <div class="card-header pb-0">
+          <h6>Players</h6>
+          <form method="GET" class="d-flex gap-2 mt-2">
+            <input type="text" name="q" class="form-control" placeholder="Search by name..." value="<%= typeof q === 'string' ? q : '' %>">
+            <button type="submit" class="btn btn-primary">Search</button>
+          </form>
+        </div>
+        <div class="card-body px-0 pt-0 pb-2">
+          <div class="table-responsive p-0">
+            <table class="table align-items-center mb-0">
+              <thead>
+                <tr>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Player</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Age</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (players && players.length) { %>
+                  <% players.forEach(function(p) { %>
+                  <tr>
+                    <td>
+                      <div class="d-flex px-2 py-1 align-items-center">
+                        <div>
+                          <img src="<%= p.avatar || '/assets/img/team-2.jpg' %>" class="avatar avatar-sm me-2" alt="">
+                        </div>
+                        <div class="d-flex flex-column justify-content-center">
+                          <h6 class="mb-0 text-sm"><%= p.firstName %> <%= p.middleName || '' %> <%= p.lastName %></h6>
+                        </div>
+                      </div>
+                    </td>
+                    <td><span class="text-sm"><%= p.age || '-' %></span></td>
+                  </tr>
+                  <% }); %>
+                <% } else { %>
+                  <tr><td colspan="2" class="text-center py-4">No players found</td></tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <%- include('../partials/scripts') %>
+</body>
+</html>

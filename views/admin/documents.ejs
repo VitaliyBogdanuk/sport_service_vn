@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: 'Documents' }) %>
+</head>
+<body class="g-sidenav-show bg-gray-100">
+  <div class="min-height-300 bg-dark position-absolute w-100"></div>
+  <%- include('../partials/sidebar', { user, active }) %>
+  <main class="main-content position-relative border-radius-lg">
+    <%- include('../partials/navbar-dashboard', { user, pageTitle: 'Documents' }) %>
+    <div class="container-fluid py-4">
+      <% if (typeof success === 'string' && success) { %>
+      <div class="alert alert-success"><%= success %></div>
+      <% } %>
+      <% if (typeof error === 'string' && error) { %>
+      <div class="alert alert-danger"><%= error %></div>
+      <% } %>
+      <div class="card mb-4">
+        <div class="card-header">
+          <h6 class="mb-0">Upload documents for player</h6>
+        </div>
+        <div class="card-body">
+          <form action="/admin/documents/upload" method="POST" enctype="multipart/form-data">
+            <%- include('../partials/csrf') %>
+            <div class="row mb-3">
+              <div class="col-md-4">
+                <label class="form-label">Player</label>
+                <select name="playerId" class="form-control" required>
+                  <option value="">— Select player —</option>
+                  <% players.forEach(function(p) { %>
+                  <option value="<%= p._id %>" <%= playerId === p._id.toString() ? 'selected' : '' %>><%= p.firstName %> <%= p.lastName %> (<%= p.email %>)</option>
+                  <% }); %>
+                </select>
+              </div>
+              <div class="col-md-4">
+                <label class="form-label">Files</label>
+                <input type="file" name="documents" class="form-control" multiple accept=".pdf,.jpg,.jpeg,.png">
+              </div>
+              <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary">Upload</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h6 class="mb-0">All documents</h6>
+        </div>
+        <div class="card-body">
+          <form method="GET" class="d-flex gap-2 mb-3 flex-wrap">
+            <select name="playerId" class="form-control" style="max-width:200px">
+              <option value="">All players</option>
+              <% players.forEach(function(p) { %>
+              <option value="<%= p._id %>" <%= playerId === p._id.toString() ? 'selected' : '' %>><%= p.firstName %> <%= p.lastName %></option>
+              <% }); %>
+            </select>
+            <select name="status" class="form-control" style="max-width:150px">
+              <option value="">All status</option>
+              <option value="pending" <%= status === 'pending' ? 'selected' : '' %>>Pending</option>
+              <option value="approved" <%= status === 'approved' ? 'selected' : '' %>>Approved</option>
+              <option value="rejected" <%= status === 'rejected' ? 'selected' : '' %>>Rejected</option>
+            </select>
+            <button type="submit" class="btn btn-outline-primary">Filter</button>
+          </form>
+          <div class="table-responsive">
+            <table class="table align-items-center mb-0">
+              <thead>
+                <tr>
+                  <th>Player</th>
+                  <th>Name</th>
+                  <th>Status</th>
+                  <th>Uploaded by</th>
+                  <th>Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (documents.length) { %>
+                  <% documents.forEach(function(d) { %>
+                  <tr>
+                    <td><%= d.user ? d.user.firstName + ' ' + d.user.lastName : '-' %></td>
+                    <td><a href="<%= d.url %>" target="_blank"><%= d.name %></a></td>
+                    <td>
+                      <form action="/admin/documents/<%= d._id %>" method="POST" class="d-inline">
+                        <%- include('../partials/csrf') %>
+                        <select name="status" class="form-select form-select-sm text-white border-<%= (d.status || 'pending') === 'approved' ? 'success' : ((d.status || 'pending') === 'rejected' ? 'danger' : 'warning') %> bg-<%= (d.status || 'pending') === 'approved' ? 'success' : ((d.status || 'pending') === 'rejected' ? 'danger' : 'warning') %> bg-opacity-10" style="width:auto;min-width:100px" onchange="this.form.submit()">
+                          <option value="pending" <%= (d.status || 'pending') === 'pending' ? 'selected' : '' %>>Pending</option>
+                          <option value="approved" <%= (d.status || 'pending') === 'approved' ? 'selected' : '' %>>Approved</option>
+                          <option value="rejected" <%= (d.status || 'pending') === 'rejected' ? 'selected' : '' %>>Rejected</option>
+                        </select>
+                      </form>
+                    </td>
+                    <td><span class="text-capitalize"><%= d.uploadedBy || 'player' %></span></td>
+                    <td><%= d.createdAt ? new Date(d.createdAt).toLocaleDateString() : '-' %></td>
+                    <td>
+                      <form action="/admin/documents/<%= d._id %>/delete" method="POST" class="d-inline" onsubmit="return confirm('Delete?');">
+                        <%- include('../partials/csrf') %>
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                      </form>
+                    </td>
+                  </tr>
+                  <% }); %>
+                <% } else { %>
+                  <tr><td colspan="6" class="text-center py-4">No documents</td></tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <%- include('../partials/scripts') %>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: 'Teams' }) %>
+</head>
+<body class="g-sidenav-show bg-gray-100">
+  <div class="min-height-300 bg-dark position-absolute w-100"></div>
+  <%- include('../partials/sidebar', { user, active }) %>
+  <main class="main-content position-relative border-radius-lg">
+    <%- include('../partials/navbar-dashboard', { user, pageTitle: 'Teams' }) %>
+    <div class="container-fluid py-4">
+      <% if (typeof success === 'string' && success) { %>
+      <div class="alert alert-success"><%= success %></div>
+      <% } %>
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h6 class="mb-0">Teams</h6>
+          <a href="/admin/teams/new" class="btn btn-sm btn-primary">Add</a>
+        </div>
+        <div class="card-body">
+          <form method="GET" class="d-flex gap-2 mb-3">
+            <input type="text" name="q" class="form-control" placeholder="Search..." value="<%= q %>">
+            <button type="submit" class="btn btn-outline-primary">Search</button>
+          </form>
+          <div class="table-responsive">
+            <table class="table align-items-center mb-0">
+              <thead><tr><th>Name</th><th>Organization</th><th>Coach</th><th></th></tr></thead>
+              <tbody>
+                <% teams.forEach(function(t) { %>
+                <tr>
+                  <td><%= t.name %></td>
+                  <td><%= t.organization && t.organization.name ? t.organization.name : '-' %></td>
+                  <td><%= t.coach ? t.coach.firstName + ' ' + t.coach.lastName : '-' %></td>
+                  <td>
+                    <a href="/admin/teams/<%= t._id %>/edit" class="btn btn-sm btn-outline-primary me-1">Edit</a>
+                    <form action="/admin/teams/<%= t._id %>/delete" method="POST" class="d-inline" onsubmit="return confirm('Delete?');">
+                      <%- include('../partials/csrf') %>
+                      <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <%- include('../partials/scripts') %>
+</body>
+</html>

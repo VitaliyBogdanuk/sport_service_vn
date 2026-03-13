@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: 'Documents' }) %>
+</head>
+<body class="g-sidenav-show bg-gray-100">
+  <div class="min-height-300 bg-dark position-absolute w-100"></div>
+  <%- include('../partials/sidebar', { user, active: 'documents' }) %>
+  <main class="main-content position-relative border-radius-lg">
+    <%- include('../partials/navbar-dashboard', { user, pageTitle: 'My Documents' }) %>
+    <div class="container-fluid py-4">
+      <% if (typeof error === 'string' && error) { %>
+      <div class="alert alert-danger" role="alert"><%= error %></div>
+      <% } %>
+      <% if (typeof success === 'string' && success) { %>
+      <div class="alert alert-success" role="alert"><%= success %></div>
+      <% } %>
+      <div class="card">
+        <div class="card-header pb-0">
+          <h6>Upload documents</h6>
+          <p class="text-sm text-secondary mb-0">Allowed: PDF, JPEG, PNG (max 5MB each, up to 5 files). Documents added by you require admin approval before coaches can see them.</p>
+        </div>
+        <div class="card-body">
+          <form action="/player/documents" method="POST" enctype="multipart/form-data">
+          <%- include('../partials/csrf') %>
+            <input type="file" name="documents" multiple accept=".pdf,.jpg,.jpeg,.png" class="form-control mb-3">
+            <button type="submit" class="btn btn-primary">Upload</button>
+          </form>
+        </div>
+      </div>
+      <div class="card mt-4">
+        <div class="card-header pb-0">
+          <h6>My documents</h6>
+        </div>
+        <div class="card-body px-0 pt-0 pb-2">
+          <div class="table-responsive p-0">
+            <table class="table align-items-center mb-0">
+              <thead>
+                <tr>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Name</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Status</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Size</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (documents && documents.length) { %>
+                  <% documents.forEach(function(d) { %>
+                  <tr>
+                    <td><a href="<%= d.url %>" target="_blank" class="text-sm"><%= d.name %></a></td>
+                    <td><span class="badge bg-<%= d.status === 'approved' ? 'success' : (d.status === 'pending' ? 'warning' : 'danger') %>"><%= d.status || 'pending' %></span></td>
+                    <td><span class="text-sm"><%= d.size ? (d.size / 1024).toFixed(1) + ' KB' : '-' %></span></td>
+                    <td><span class="text-sm"><%= d.createdAt ? new Date(d.createdAt).toLocaleDateString() : '-' %></span></td>
+                    <td>
+                      <form action="/player/documents/<%= d._id %>/delete" method="POST" class="d-inline" onsubmit="return confirm('Delete this document?');">
+                      <%- include('../partials/csrf') %>
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                      </form>
+                    </td>
+                  </tr>
+                  <% }); %>
+                <% } else { %>
+                  <tr><td colspan="5" class="text-center py-4">No documents yet</td></tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <%- include('../partials/scripts') %>
+</body>
+</html>

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: targetUser ? 'Edit User' : 'New User' }) %>
+</head>
+<body class="g-sidenav-show bg-gray-100">
+  <div class="min-height-300 bg-dark position-absolute w-100"></div>
+  <%- include('../partials/sidebar', { user, active }) %>
+  <main class="main-content position-relative border-radius-lg">
+    <%- include('../partials/navbar-dashboard', { user, pageTitle: targetUser ? 'Edit User' : 'New User' }) %>
+    <div class="container-fluid py-4">
+      <% if (typeof success === 'string' && success) { %>
+      <div class="alert alert-success alert-dismissible fade show" role="alert"><%= success %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      <% } %>
+      <% if (typeof error === 'string' && error) { %>
+      <div class="alert alert-danger alert-dismissible fade show" role="alert"><%= error %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      <% } %>
+      <div class="card">
+        <div class="card-body">
+          <form action="/admin/users<%= targetUser ? '/' + targetUser._id : '' %>" method="POST">
+            <%- include('../partials/csrf') %>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" value="<%= targetUser ? targetUser.email : '' %>" <%= targetUser ? 'readonly' : 'required' %>>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Password <%= targetUser ? '(leave blank to keep)' : '' %></label>
+                <input type="password" name="<%= targetUser ? 'newPassword' : 'password' %>" class="form-control" placeholder="••••••••" <%= targetUser ? '' : 'required' %>>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Role</label>
+                <select name="role" class="form-control" required>
+                  <option value="admin" <%= targetUser && targetUser.role === 'admin' ? 'selected' : '' %>>Admin</option>
+                  <option value="coach" <%= targetUser && targetUser.role === 'coach' ? 'selected' : '' %>>Coach</option>
+                  <option value="player" <%= targetUser && targetUser.role === 'player' ? 'selected' : '' %>>Player</option>
+                </select>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Team</label>
+                <select name="team" class="form-control">
+                  <option value="">— None —</option>
+                  <% teams.forEach(function(t) { %>
+                  <option value="<%= t._id %>" <%= targetUser && targetUser.team && (targetUser.team._id ? targetUser.team._id.toString() : targetUser.team.toString()) === t._id.toString() ? 'selected' : '' %>><%= t.name %></option>
+                  <% }); %>
+                </select>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">First Name</label>
+                <input type="text" name="firstName" class="form-control" value="<%= targetUser ? targetUser.firstName : '' %>" required>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Last Name</label>
+                <input type="text" name="lastName" class="form-control" value="<%= targetUser ? targetUser.lastName : '' %>" required>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Middle Name</label>
+                <input type="text" name="middleName" class="form-control" value="<%= targetUser ? (targetUser.middleName || '') : '' %>">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Date of Birth</label>
+                <input type="date" name="dateOfBirth" class="form-control" value="<%= targetUser && targetUser.dateOfBirth ? new Date(targetUser.dateOfBirth).toISOString().slice(0,10) : '' %>">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="/admin/users" class="btn btn-outline-secondary">Cancel</a>
+          </form>
+        </div>
+      </div>
+
+      <% if (targetUser && targetUser.role === 'player') {
+        const editUserUrl = '/admin/users/' + targetUser._id + '/edit';
+      %>
+      <div class="card mt-4">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h6 class="mb-0">Documents</h6>
+          <span class="text-sm text-muted"><%= targetUser.firstName %> <%= targetUser.lastName %></span>
+        </div>
+        <div class="card-body">
+          <form action="/admin/documents/upload" method="POST" enctype="multipart/form-data" class="mb-4">
+            <%- include('../partials/csrf') %>
+            <input type="hidden" name="playerId" value="<%= targetUser._id %>">
+            <input type="hidden" name="returnTo" value="<%= editUserUrl %>">
+            <div class="d-flex gap-2 align-items-end">
+              <div class="flex-grow-1">
+                <input type="file" name="documents" class="form-control" multiple accept=".pdf,.jpg,.jpeg,.png">
+              </div>
+              <button type="submit" class="btn btn-primary">Upload</button>
+            </div>
+          </form>
+          <div class="table-responsive">
+            <table class="table align-items-center mb-0">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Status</th>
+                  <th>Uploaded by</th>
+                  <th>Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (documents && documents.length) { %>
+                  <% documents.forEach(function(d) { %>
+                  <tr>
+                    <td><a href="<%= d.url %>" target="_blank"><%= d.name %></a></td>
+                    <td>
+                      <form action="/admin/documents/<%= d._id %>" method="POST" class="d-inline">
+                        <%- include('../partials/csrf') %>
+                        <input type="hidden" name="returnTo" value="<%= editUserUrl %>">
+                        <select name="status" class="form-select form-select-sm text-white border-<%= (d.status || 'pending') === 'approved' ? 'success' : ((d.status || 'pending') === 'rejected' ? 'danger' : 'warning') %> bg-<%= (d.status || 'pending') === 'approved' ? 'success' : ((d.status || 'pending') === 'rejected' ? 'danger' : 'warning') %> bg-opacity-10" style="width:auto;min-width:100px" onchange="this.form.submit()">
+                          <option value="pending" <%= (d.status || 'pending') === 'pending' ? 'selected' : '' %>>Pending</option>
+                          <option value="approved" <%= (d.status || 'pending') === 'approved' ? 'selected' : '' %>>Approved</option>
+                          <option value="rejected" <%= (d.status || 'pending') === 'rejected' ? 'selected' : '' %>>Rejected</option>
+                        </select>
+                      </form>
+                    </td>
+                    <td><%= d.uploadedBy || 'player' %></td>
+                    <td><%= d.createdAt ? new Date(d.createdAt).toLocaleDateString() : '-' %></td>
+                    <td>
+                      <form action="/admin/documents/<%= d._id %>/delete" method="POST" class="d-inline" onsubmit="return confirm('Delete?');">
+                        <%- include('../partials/csrf') %>
+                        <input type="hidden" name="returnTo" value="<%= editUserUrl %>">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                      </form>
+                    </td>
+                  </tr>
+                  <% }); %>
+                <% } else { %>
+                  <tr><td colspan="5" class="text-center py-3">No documents</td></tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <% } %>
+    </div>
+  </main>
+  <%- include('../partials/scripts') %>
+</body>
+</html>

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: targetPlayer ? 'Edit Player' : 'New Player' }) %>
+</head>
+<body class="g-sidenav-show bg-gray-100">
+  <div class="min-height-300 bg-dark position-absolute w-100"></div>
+  <%- include('../partials/sidebar', { user, active }) %>
+  <main class="main-content position-relative border-radius-lg">
+    <%- include('../partials/navbar-dashboard', { user, pageTitle: targetPlayer ? 'Edit Player' : 'New Player' }) %>
+    <div class="container-fluid py-4">
+      <div class="card">
+        <div class="card-body">
+          <form action="/coach/players<%= targetPlayer ? '/' + targetPlayer._id : '' %>" method="POST">
+            <%- include('../partials/csrf') %>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" name="email" class="form-control" value="<%= targetPlayer ? targetPlayer.email : '' %>" <%= targetPlayer ? 'readonly' : 'required' %>>
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Password <%= targetPlayer ? '(leave blank to keep)' : '' %></label>
+                <input type="password" name="<%= targetPlayer ? 'newPassword' : 'password' %>" class="form-control" placeholder="••••••••" <%= targetPlayer ? '' : 'required' %>>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">First Name</label>
+                <input type="text" name="firstName" class="form-control" value="<%= targetPlayer ? targetPlayer.firstName : '' %>" required>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Last Name</label>
+                <input type="text" name="lastName" class="form-control" value="<%= targetPlayer ? targetPlayer.lastName : '' %>" required>
+              </div>
+              <div class="col-md-4 mb-3">
+                <label class="form-label">Middle Name</label>
+                <input type="text" name="middleName" class="form-control" value="<%= targetPlayer ? (targetPlayer.middleName || '') : '' %>">
+              </div>
+              <div class="col-md-6 mb-3">
+                <label class="form-label">Date of Birth</label>
+                <input type="date" name="dateOfBirth" class="form-control" value="<%= targetPlayer && targetPlayer.dateOfBirth ? new Date(targetPlayer.dateOfBirth).toISOString().slice(0,10) : '' %>">
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="/coach/players" class="btn btn-outline-secondary">Cancel</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+  <%- include('../partials/scripts') %>
+</body>
+</html>

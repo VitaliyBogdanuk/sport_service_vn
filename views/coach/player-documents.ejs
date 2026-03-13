@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: 'Player Documents' }) %>
+</head>
+<body class="g-sidenav-show bg-gray-100">
+  <div class="min-height-300 bg-dark position-absolute w-100"></div>
+  <%- include('../partials/sidebar', { user, active }) %>
+  <main class="main-content position-relative border-radius-lg">
+    <%- include('../partials/navbar-dashboard', { user, pageTitle: targetPlayer.firstName + ' ' + targetPlayer.lastName + ' – Documents' }) %>
+    <div class="container-fluid py-4">
+      <div class="mb-3">
+        <a href="/coach/players" class="btn btn-sm btn-outline-secondary">← Back to players</a>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <h6 class="mb-0">Approved documents for <%= targetPlayer.firstName %> <%= targetPlayer.lastName %></h6>
+          <p class="text-sm text-muted mb-0 mt-1">Only admin-approved documents are visible here.</p>
+        </div>
+        <div class="card-body px-0 pt-0 pb-2">
+          <div class="table-responsive p-0">
+            <table class="table align-items-center mb-0">
+              <thead>
+                <tr>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Name</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Size</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (documents && documents.length) { %>
+                  <% documents.forEach(function(d) { %>
+                  <tr>
+                    <td><a href="<%= d.url %>" target="_blank" class="text-sm"><%= d.name %></a></td>
+                    <td><span class="text-sm"><%= d.size ? (d.size / 1024).toFixed(1) + ' KB' : '-' %></span></td>
+                    <td><span class="text-sm"><%= d.createdAt ? new Date(d.createdAt).toLocaleDateString() : '-' %></span></td>
+                  </tr>
+                  <% }); %>
+                <% } else { %>
+                  <tr><td colspan="3" class="text-center py-4">No approved documents</td></tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <%- include('../partials/scripts') %>
+</body>
+</html>

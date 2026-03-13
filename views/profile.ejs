@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('partials/head', { title: 'Profile' }) %>
+</head>
+<body class="g-sidenav-show bg-gray-100">
+  <div class="position-absolute w-100 min-height-300 top-0" style="background-image: url('https://raw.githubusercontent.com/creativetimofficial/public-assets/master/argon-dashboard-pro/assets/img/profile-layout-header.jpg'); background-position-y: 50%;">
+    <span class="mask bg-primary opacity-6"></span>
+  </div>
+  <%- include('partials/sidebar', { user, active: 'profile' }) %>
+  <div class="main-content position-relative max-height-vh-100 h-100">
+    <%- include('partials/navbar-dashboard', { user, pageTitle: 'Profile' }) %>
+    <div class="card shadow-lg mx-4 card-profile-bottom">
+      <div class="card-body p-3">
+        <div class="row gx-4">
+          <div class="col-auto">
+            <div class="avatar avatar-xl position-relative">
+              <img id="headerAvatar" src="<%= user.avatar || '/assets/img/team-1.jpg' %>" alt="profile" class="w-100 border-radius-lg shadow-sm">
+            </div>
+          </div>
+          <div class="col-auto my-auto">
+            <h5 class="mb-1"><%= user.firstName %> <%= user.lastName %></h5>
+            <p class="mb-0 font-weight-bold text-sm text-capitalize"><%= user.role %></p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container-fluid py-4">
+      <div class="row">
+        <div class="col-md-8">
+          <div class="card">
+            <div class="card-header pb-0">
+              <p class="mb-0">Edit Profile</p>
+            </div>
+            <div class="card-body">
+              <% if (typeof error === 'string' && error) { %>
+              <div class="alert alert-danger" role="alert"><%= error %></div>
+              <% } %>
+              <% if (typeof success === 'string' && success) { %>
+              <div class="alert alert-success" role="alert"><%= success %></div>
+              <% } %>
+              <%- include('partials/profile-form', { user }) %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.css" rel="stylesheet">
+  <%- include('partials/scripts') %>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.1/cropper.min.js"></script>
+  <script>
+(function() {
+  const input = document.getElementById('avatarInput');
+  const preview = document.getElementById('avatarPreview');
+  const selectBtn = document.getElementById('avatarSelectBtn');
+  const modal = document.getElementById('avatarCropperModal');
+  const cropperImg = document.getElementById('cropperImage');
+  const applyBtn = document.getElementById('avatarCropApply');
+
+  if (!input || !modal) return;
+
+  let cropper = null;
+  let applied = false;
+  const bsModal = modal ? new bootstrap.Modal(modal) : null;
+
+  selectBtn?.addEventListener('click', () => input.click());
+
+  input.addEventListener('change', function(e) {
+    applied = false;
+    const file = e.target.files?.[0];
+    if (!file || !file.type.startsWith('image/')) return;
+    if (file.size > 2 * 1024 * 1024) { alert('File too large (max 2MB)'); return; }
+    const url = URL.createObjectURL(file);
+    if (cropper) { cropper.destroy(); cropper = null; }
+    cropperImg.onload = function() {
+      bsModal?.show();
+      setTimeout(function() {
+        cropper = new Cropper(cropperImg, { aspectRatio: 1, viewMode: 2 });
+      }, 100);
+    };
+    cropperImg.src = url;
+  });
+
+  applyBtn?.addEventListener('click', function() {
+    if (!cropper) return;
+    applied = true;
+    cropper.getCroppedCanvas({ width: 400, height: 400 }).toBlob(function(blob) {
+      if (!blob) return;
+      const file = new File([blob], 'avatar.jpg', { type: 'image/jpeg' });
+      const dt = new DataTransfer();
+      dt.items.add(file);
+      input.files = dt.files;
+      const previewUrl = URL.createObjectURL(blob);
+      preview.src = previewUrl;
+      const headerAvatar = document.getElementById('headerAvatar');
+      if (headerAvatar) headerAvatar.src = previewUrl;
+      URL.revokeObjectURL(cropperImg.src);
+      cropper.destroy();
+      cropper = null;
+      bsModal?.hide();
+    }, 'image/jpeg', 0.9);
+  });
+
+  modal.addEventListener('hidden.bs.modal', function() {
+    if (cropper) { cropper.destroy(); cropper = null; }
+    if (cropperImg.src && cropperImg.src.startsWith('blob:')) {
+      URL.revokeObjectURL(cropperImg.src);
+    }
+    cropperImg.src = '';
+    if (!applied) input.value = '';
+    applied = false;
+  });
+})();
+  </script>
+</body>
+</html>

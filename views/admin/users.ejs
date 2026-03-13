@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: 'Users' }) %>
+</head>
+<body class="g-sidenav-show bg-gray-100">
+  <div class="min-height-300 bg-dark position-absolute w-100"></div>
+  <%- include('../partials/sidebar', { user, active }) %>
+  <main class="main-content position-relative border-radius-lg">
+    <%- include('../partials/navbar-dashboard', { user, pageTitle: 'Users' }) %>
+    <div class="container-fluid py-4">
+      <% if (typeof success === 'string' && success) { %>
+      <div class="alert alert-success"><%= success %></div>
+      <% } %>
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h6 class="mb-0">Users</h6>
+          <a href="/admin/users/new" class="btn btn-sm btn-primary">Add User</a>
+        </div>
+        <div class="card-body">
+          <form method="GET" class="d-flex gap-2 mb-3 flex-wrap">
+            <input type="text" name="q" class="form-control" placeholder="Search..." value="<%= q %>" style="max-width:200px">
+            <select name="role" class="form-control" style="max-width:120px">
+              <option value="">All roles</option>
+              <option value="admin" <%= role === 'admin' ? 'selected' : '' %>>Admin</option>
+              <option value="coach" <%= role === 'coach' ? 'selected' : '' %>>Coach</option>
+              <option value="player" <%= role === 'player' ? 'selected' : '' %>>Player</option>
+            </select>
+            <button type="submit" class="btn btn-outline-primary">Search</button>
+          </form>
+          <div class="table-responsive">
+            <table class="table align-items-center mb-0">
+              <thead><tr><th>Name</th><th>Email</th><th>Role</th><th>Team</th><th></th></tr></thead>
+              <tbody>
+                <% users.forEach(function(u) { %>
+                <tr>
+                  <td><%= u.firstName %> <%= u.lastName %></td>
+                  <td><%= u.email %></td>
+                  <td><span class="badge bg-<%= u.role === 'admin' ? 'danger' : (u.role === 'coach' ? 'info' : 'success') %>"><%= u.role %></span></td>
+                  <td><%= u.team && u.team.name ? u.team.name : '-' %></td>
+                  <td>
+                    <a href="/admin/users/<%= u._id %>/edit" class="btn btn-sm btn-outline-primary me-1">Edit</a>
+                    <% if (u._id.toString() !== user._id.toString()) { %>
+                    <form action="/admin/users/<%= u._id %>/delete" method="POST" class="d-inline" onsubmit="return confirm('Delete?');">
+                      <%- include('../partials/csrf') %>
+                      <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                    </form>
+                    <% } %>
+                  </td>
+                </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <%- include('../partials/scripts') %>
+</body>
+</html>

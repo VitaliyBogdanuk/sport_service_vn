@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: organization ? 'Edit Organization' : 'New Organization' }) %>
+</head>
+<body class="g-sidenav-show bg-gray-100">
+  <div class="min-height-300 bg-dark position-absolute w-100"></div>
+  <%- include('../partials/sidebar', { user, active }) %>
+  <main class="main-content position-relative border-radius-lg">
+    <%- include('../partials/navbar-dashboard', { user, pageTitle: organization ? 'Edit Organization' : 'New Organization' }) %>
+    <div class="container-fluid py-4">
+      <div class="card">
+        <div class="card-body">
+          <form action="/admin/organizations<%= organization ? '/' + organization._id : '' %>" method="POST">
+            <%- include('../partials/csrf') %>
+            <div class="mb-3">
+              <label class="form-label">Name</label>
+              <input type="text" name="name" class="form-control" value="<%= organization ? organization.name : '' %>" required>
+            </div>
+            <div class="mb-3">
+              <label class="form-label">Description</label>
+              <textarea name="description" class="form-control" rows="3"><%= organization ? (organization.description || '') : '' %></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary">Save</button>
+            <a href="/admin/organizations" class="btn btn-outline-secondary">Cancel</a>
+          </form>
+        </div>
+      </div>
+    </div>
+  </main>
+  <%- include('../partials/scripts') %>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: 'Organizations' }) %>
+</head>
+<body>
+  <div class="container position-sticky z-index-sticky top-0">
+    <div class="row">
+      <div class="col-12">
+        <%- include('../partials/navbar-public') %>
+      </div>
+    </div>
+  </div>
+  <main class="main-content mt-0" style="padding-top: 6rem;">
+    <div class="container-fluid py-4">
+      <div class="card">
+        <div class="card-header pb-0">
+          <h6>Organizations</h6>
+          <form method="GET" class="d-flex gap-2 mt-2">
+            <input type="text" name="q" class="form-control" placeholder="Search..." value="<%= typeof q === 'string' ? q : '' %>">
+            <button type="submit" class="btn btn-primary">Search</button>
+          </form>
+        </div>
+        <div class="card-body px-0 pt-0 pb-2">
+          <div class="table-responsive p-0">
+            <table class="table align-items-center mb-0">
+              <thead>
+                <tr>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Name</th>
+                  <th class="text-uppercase text-secondary text-xxs font-weight-bolder opacity-7">Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (organizations && organizations.length) { %>
+                  <% organizations.forEach(function(o) { %>
+                  <tr>
+                    <td><h6 class="mb-0 text-sm"><%= o.name %></h6></td>
+                    <td><span class="text-sm"><%= o.description || '-' %></span></td>
+                  </tr>
+                  <% }); %>
+                <% } else { %>
+                  <tr><td colspan="2" class="text-center py-4">No organizations found</td></tr>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+  <%- include('../partials/scripts') %>
+</body>
+</html>

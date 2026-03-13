@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../partials/head', { title: 'Players' }) %>
+</head>
+<body class="g-sidenav-show bg-gray-100">
+  <div class="min-height-300 bg-dark position-absolute w-100"></div>
+  <%- include('../partials/sidebar', { user, active }) %>
+  <main class="main-content position-relative border-radius-lg">
+    <%- include('../partials/navbar-dashboard', { user, pageTitle: 'Players' }) %>
+    <div class="container-fluid py-4">
+      <% if (typeof success === 'string' && success) { %>
+      <div class="alert alert-success"><%= success %></div>
+      <% } %>
+      <% if (!user.team) { %>
+      <div class="alert alert-warning">You are not assigned to a team. Contact admin.</div>
+      <% } else { %>
+      <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+          <h6 class="mb-0">Players</h6>
+          <a href="/coach/players/new" class="btn btn-sm btn-primary">Add Player</a>
+        </div>
+        <div class="card-body">
+          <form method="GET" class="d-flex gap-2 mb-3">
+            <input type="text" name="q" class="form-control" placeholder="Search..." value="<%= q %>">
+            <button type="submit" class="btn btn-outline-primary">Search</button>
+          </form>
+          <div class="table-responsive">
+            <table class="table align-items-center mb-0">
+              <thead><tr><th>Name</th><th>Email</th><th>Age</th><th>Documents</th><th></th></tr></thead>
+              <tbody>
+                <% players.forEach(function(p) { %>
+                <tr>
+                  <td><%= p.firstName %> <%= p.middleName || '' %> <%= p.lastName %></td>
+                  <td><%= p.email %></td>
+                  <td><%= p.age || '-' %></td>
+                  <td><a href="/coach/players/<%= p._id %>/documents" class="btn btn-sm btn-outline-secondary">View docs</a></td>
+                  <td>
+                    <a href="/coach/players/<%= p._id %>/edit" class="btn btn-sm btn-outline-primary me-1">Edit</a>
+                    <form action="/coach/players/<%= p._id %>/delete" method="POST" class="d-inline" onsubmit="return confirm('Delete?');">
+                      <%- include('../partials/csrf') %>
+                      <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                    </form>
+                  </td>
+                </tr>
+                <% }); %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <% } %>
+    </div>
+  </main>
+  <%- include('../partials/scripts') %>
+</body>
+</html>
