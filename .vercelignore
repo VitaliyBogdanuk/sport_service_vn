@@ -1,0 +1,2 @@
+# Лише для Xcode; на Vercel не потрібно (іконки в public після build)
+ios/AppIcon.appiconset

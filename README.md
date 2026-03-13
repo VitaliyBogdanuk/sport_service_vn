@@ -25,6 +25,7 @@ Monolithic Node.js application with EJS templates and PWA support. UI based on A
 
 1. У **Environment Variables** додай:
    - `MONGODB_URI`, `JWT_SECRET`, інші як у `.env.example`
+   - **`GENERATE_ICONS=true`** — на білді збираються favicon/PWA/Apple з одного `icon-1024.png` (або лише `vercel.json` buildCommand)
    - **`RUN_DB_SEED=true`** (рядок саме `true`)
    - **`ADMIN_EMAIL`**, **`ADMIN_PASSWORD`** — логін першого адміна (не лишай дефолт у проді)
 
@@ -69,3 +70,10 @@ Monolithic Node.js application with EJS templates and PWA support. UI based on A
 - JWT auth, bcrypt, nodemailer
 - Argon Dashboard 3 (Bootstrap 5)
 - PWA (manifest, service worker)
+
+## Іконки (без важкого git)
+
+- У репо комітиться лише **`public/assets/img/icons/icon-1024.png`**.
+- Після `git clone`: `npm install` → **`npm run icons`** (локально з’являться решта PNG + `apple-icon.png` / `favicon.png`).
+- **Vercel:** `buildCommand` у `vercel.json` вже з **`GENERATE_ICONS=true`** — іконки на кожному деплої.
+- **Xcode:** `GENERATE_IOS_APPICON=true npm run icons` → `ios/AppIcon.appiconset` (не в git).

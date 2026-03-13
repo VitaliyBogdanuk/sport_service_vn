@@ -5,3 +5,23 @@ uploads/*
 .DS_Store
 *.log
 dist/
+
+# Іконки згенеровані з icon-1024.png (не комітити — репо легший)
+public/assets/img/icons/icon-192.png
+public/assets/img/icons/icon-512.png
+public/assets/img/icons/apple-icon-57.png
+public/assets/img/icons/apple-icon-60.png
+public/assets/img/icons/apple-icon-72.png
+public/assets/img/icons/apple-icon-76.png
+public/assets/img/icons/apple-icon-114.png
+public/assets/img/icons/apple-icon-120.png
+public/assets/img/icons/apple-icon-144.png
+public/assets/img/icons/apple-icon-152.png
+public/assets/img/icons/apple-icon-167.png
+public/assets/img/icons/apple-icon-1024.png
+public/assets/img/icons/apple-touch-icon.png
+public/assets/img/icons/favicon-16x16.png
+public/assets/img/icons/favicon-32x32.png
+public/assets/img/apple-icon.png
+public/assets/img/favicon.png
+ios/

@@ -1,0 +1,4 @@
+{
+  "buildCommand": "GENERATE_ICONS=true npm run build",
+  "installCommand": "npm install"
+}
