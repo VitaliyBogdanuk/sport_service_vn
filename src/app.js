@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import helmet from 'helmet';
 
 import { connectDB } from './config/db.js';
+import { runSeed } from './lib/runSeed.js';
 import { detectDevice } from './middleware/device.js';
 import { csrfToken } from './middleware/csrf.js';
 import authRoutes from './routes/auth.js';
@@ -17,6 +18,15 @@ import playerRoutes from './routes/player.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 await connectDB();
+
+if (process.env.RUN_DB_SEED === 'true') {
+  try {
+    await runSeed();
+  } catch (e) {
+    console.error('[seed] Failed:', e);
+    process.exit(1);
+  }
+}
 
 const app = express();
 app.set('view engine', 'ejs');

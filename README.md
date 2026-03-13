@@ -18,9 +18,19 @@ Monolithic Node.js application with EJS templates and PWA support. UI based on A
 3. **Seed data** (optional)
    ```bash
    npm run seed-admin
-   # Admin: admin@example.com / admin123
-   # Coach: coach@example.com / coach123 (assigned to Sample Team)
+   # Or set ADMIN_EMAIL / ADMIN_PASSWORD in .env; coach stays coach@example.com / coach123
    ```
+
+### Vercel: сід при першому деплої
+
+1. У **Environment Variables** додай:
+   - `MONGODB_URI`, `JWT_SECRET`, інші як у `.env.example`
+   - **`RUN_DB_SEED=true`** (рядок саме `true`)
+   - **`ADMIN_EMAIL`**, **`ADMIN_PASSWORD`** — логін першого адміна (не лишай дефолт у проді)
+
+2. Задеплой. Після старту застосунок підключиться до MongoDB і виконає сід (ідемпотентно).
+
+3. Після успішного деплою **вимкни сід**: зміни `RUN_DB_SEED` на `false` або видали змінну — щоб не ганяти зайві запити на кожному cold start.
 
 4. **Run**
    ```bash
