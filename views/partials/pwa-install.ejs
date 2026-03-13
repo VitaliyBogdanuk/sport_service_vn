@@ -1,0 +1,34 @@
+<%# Кнопка «зберегти як застосунок» — лише мобільні; Android: beforeinstallprompt; iOS: інструкція Safari %>
+<button type="button"
+  id="pwa-install-btn"
+  class="btn btn-primary shadow-lg position-fixed rounded-pill px-4 py-2 align-items-center gap-2 d-none"
+  style="bottom: 1.25rem; right: 1rem; z-index: 1050; font-size: 0.9rem; display: none;"
+  aria-hidden="true"
+  aria-label="Встановити застосунок на телефон">
+  <i class="fas fa-mobile-alt" aria-hidden="true"></i>
+  <span>Зберегти як застосунок</span>
+</button>
+
+<div class="modal fade" id="pwa-install-ios-modal" tabindex="-1" aria-labelledby="pwa-install-ios-title" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header border-0 pb-0">
+        <h5 class="modal-title" id="pwa-install-ios-title">Додати на головний екран</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Закрити"></button>
+      </div>
+      <div class="modal-body pt-2">
+        <p class="text-sm text-muted mb-3">У Safari на iPhone / iPad:</p>
+        <ol class="text-sm ps-3 mb-0">
+          <li class="mb-2">Натисніть кнопку <strong>Поділитися</strong> <span class="text-secondary">(квадрат зі стрілкою вгору внизу екрана)</span>.</li>
+          <li class="mb-2">Прокрутіть меню вниз і оберіть <strong>На екран «Домівка»</strong>.</li>
+          <li>Натисніть <strong>Додати</strong> — іконка з’явиться на робочому столі, як у звичайного застосунку.</li>
+        </ol>
+      </div>
+      <div class="modal-footer border-0 pt-0">
+        <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Зрозуміло</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="/js/pwa-install.js" defer></script>
